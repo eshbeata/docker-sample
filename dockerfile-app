@@ -1,0 +1,40 @@
+FROM php:7.1-fpm-jessie
+
+RUN printf "deb http://archive.debian.org/debian/ jessie main\ndeb-src http://archive.debian.org/debian/ jessie main\ndeb http://security.debian.org jessie/updates main\ndeb-src http://security.debian.org/debian-security stretch/updates main contrib non-free" > /etc/apt/sources.list
+
+RUN printf "deb http://archive.debian.org/debian/ jessie main\ndeb-src http://archive.debian.org/debian/ jessie main\ndeb http://security.debian.org jessie/updates main\ndeb-src http://security.debian.org jessie/updates main" > /etc/apt/sources.list
+
+
+# Get repository and install wget and vim
+RUN apt-get update && apt-get install --no-install-recommends -y \
+        wget \
+        vim \
+        git \
+        unzip \
+        nodejs \
+        nano
+
+
+# Install PHP extensions deps
+RUN apt-get update \
+    && apt-get install --no-install-recommends -y \
+        mysql-client \
+        libmagickwand-dev \
+        libfreetype6-dev \
+        libjpeg62-turbo-dev \
+        libmcrypt-dev \
+        libpng-dev \
+        zlib1g-dev \
+        libicu-dev \
+        g++ \
+        unixodbc-dev \
+        libxml2-dev \
+        libaio-dev \
+        freetds-dev \
+        libssl-dev \
+        openssl \
+        gnupg2
+
+
+RUN usermod -u 1000 www-data
+RUN chown -R www-data:www-data /var/www

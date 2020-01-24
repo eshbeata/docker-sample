@@ -1,0 +1,47 @@
+version: '3'
+services:
+
+  # The Application
+  app:
+    container_name: docker_app
+    build:
+      context: ./
+      dockerfile: dockerfile-app
+    working_dir: /var/www/html
+    restart: always
+    volumes:
+      - ./www:/var/www/html
+      # - /mnt/shared/app:/var/www/html/storage/app
+      #- ./logs/php_logs.conf:/usr/local/etc/php-fpm.d/zz-log.conf
+
+  # The Database
+  database:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password --secure-file-priv=NULL --innodb-fast-shutdown=1
+    container_name: docker_database
+    volumes:
+      - dbdata:/var/lib/mysql
+      # - /mnt/shared/app:/var/www/html/storage/app
+    env_file:
+      - env/mysql
+    restart: always
+    ports:
+      - 33061:3306
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: docker_phpmyadmin
+    environment:
+      - PMA_PORT=33061
+    restart: always
+    ports:
+      - 8081:80
+    links:
+      - database:db
+    volumes:
+      - /sessions
+      # - /mnt/shared/app:/var/www/html/storage/app
+
+
+volumes:
+  dbdata:
